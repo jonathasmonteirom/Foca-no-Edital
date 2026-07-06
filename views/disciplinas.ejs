@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Matérias - <%= edital.titulo %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-light">
+    
+    <div class="container-fluid bg-white shadow-sm p-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center" style="max-width: 800px; margin: 0 auto;">
+            <a href="/dashboard" class="text-primary text-decoration-none fw-bold fs-4">
+                &larr; Voltar ao Painel
+            </a>
+            <div>
+                <span class="me-3 fw-bold text-dark">Olá, <%= nomeUsuario %>!</span>
+                <a href="/logout" class="btn btn-danger btn-sm">Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 800px;">
+        
+        <div class="mb-4">
+            <h3 class="fw-bold text-primary">Matérias de <%= edital.titulo %></h3>
+        </div>
+
+        <div class="card mb-5 p-4 shadow-sm border-0">
+            <h5 class="fw-bold mb-3">Adicionar Nova Matéria</h5>
+            
+            <form action="/adicionar_disciplina" method="POST" class="row g-3 mb-4">
+                <input type="hidden" name="editalId" value="<%= edital.id %>">
+                <div class="col-md-7">
+                    <input type="text" name="nome_materia" class="form-control" placeholder="Nome da Matéria (ex: Português)" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success w-100 fw-bold">+ Adicionar</button>
+                </div>
+            </form>
+
+            <h6 class="fw-bold text-secondary mb-3 mt-2">Suas Matérias:</h6>
+            <ul class="list-group">
+                <% if (disciplinas.length === 0) { %>
+                    <li class="list-group-item text-muted text-center py-4 rounded shadow-sm border-0 mb-2 bg-white">Nenhuma matéria adicionada ainda.</li>
+                <% } else { %>
+                    <% disciplinas.forEach(function(d) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 mb-2 bg-white border-0 rounded shadow-sm">
+                            
+                            <span class="fw-bold fs-6 text-capitalize text-dark"><%= d.nome_materia %></span>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                
+                                <form action="/editar_disciplina/<%= d.id %>/<%= edital.id %>" method="POST" class="m-0">
+                                    <input type="hidden" name="nome_materia" value="<%= d.nome_materia %>">
+                                    
+                                    <select name="status" class="form-select form-select-sm fw-bold border-0 shadow-sm <%= d.status === 'Concluído' ? 'bg-success text-white' : 'bg-warning text-dark' %>" onchange="this.form.submit()" style="cursor: pointer;">
+                                        <option value="Pendente" class="bg-white text-dark" <%= d.status === 'Pendente' ? 'selected' : '' %>>Pendente</option>
+                                        <option value="Concluído" class="bg-white text-dark" <%= d.status === 'Concluído' ? 'selected' : '' %>>Concluído</option>
+                                    </select>
+                                </form>
+                                
+                                <a href="/excluir_disciplina/<%= d.id %>/<%= edital.id %>" class="btn btn-outline-danger btn-sm border-0" title="Excluir Matéria" onclick="return confirm('Apagar esta matéria?');">🗑️</a>
+                            </div>
+                        </li>
+                    <% }); %>
+                <% } %>
+            </ul>
+        </div>
+
+        <% if (edital.arquivo_pdf) { %>
+            <h4 class="fw-bold mb-3">Tire suas dúvidas com a IA:</h4>
+            
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body">
+                    <div id="caixa-mensagens" class="bg-white border rounded p-3 mb-3" style="height: 250px; overflow-y: auto;">
+                        <p class="text-center text-muted small mb-0 mt-2">Envie uma pergunta sobre o edital anexado.</p>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="text" id="input-pergunta" class="form-control" placeholder="Ex: Qual a data limite de isenção?">
+                        <button id="btn-enviar" class="btn btn-primary fw-bold px-4">Enviar</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const arquivoPdf = "<%= edital.arquivo_pdf %>";
+                const btn = document.getElementById('btn-enviar');
+                const input = document.getElementById('input-pergunta');
+                const caixa = document.getElementById('caixa-mensagens');
+
+                btn.addEventListener('click', async () => {
+                    const pergunta = input.value.trim();
+                    if (!pergunta) return;
+
+                    caixa.innerHTML += `<div class="text-end mb-2"><span class="bg-primary text-white px-3 py-2 rounded d-inline-block shadow-sm">${pergunta}</span></div>`;
+                    input.value = '';
+                    caixa.scrollTop = caixa.scrollHeight; 
+
+                    const tempId = 'load-' + Date.now();
+                    caixa.innerHTML += `<div id="${tempId}" class="mb-2 text-primary small"><i>Consultando o PDF...</i></div>`;
+                    caixa.scrollTop = caixa.scrollHeight;
+
+                    try {
+                        const res = await fetch('/api/enviar_pergunta', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pergunta, arquivo_pdf: arquivoPdf })
+                        });
+                        
+                        if (!res.ok) throw new Error("Rota não encontrada ou erro no Node.js");
+                        
+                        const dados = await res.json();
+                        document.getElementById(tempId).remove();
+
+                        if (dados.erro) {
+                            caixa.innerHTML += `<div class="mb-2"><span class="bg-danger text-white px-3 py-2 rounded d-inline-block shadow-sm">Erro: ${dados.erro}</span></div>`;
+                        } else {
+                            caixa.innerHTML += `<div class="mb-2"><span class="bg-light border px-3 py-2 rounded d-inline-block shadow-sm"> ${dados.resposta}</span></div>`;
+                        }
+                    } catch (e) {
+                        document.getElementById(tempId).remove();
+                        caixa.innerHTML += `<div class="mb-2"><span class="bg-danger text-white px-3 py-2 rounded d-inline-block shadow-sm">Falha na comunicação. Verifique se o Node e o Python estão ligados.</span></div>`;
+                    }
+                    caixa.scrollTop = caixa.scrollHeight; 
+                });
+
+                input.addEventListener('keypress', e => e.key === 'Enter' && btn.click());
+            </script>
+        <% } %>
+
+    </div>
+</body>
+</html>

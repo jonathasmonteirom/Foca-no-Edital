@@ -1,0 +1,148 @@
+/* Importação da Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #2b2b2b;
+}
+
+/* LOGIN E CADASTRO */
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d6efd 0%, #00d2ff 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.brand-title {
+    color: #0d6efd;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+}
+
+/* BARRA DE NAV */
+.navbar-custom {
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.navbar-custom .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: #0d6efd;
+}
+
+/* DASHBOARD */
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.content-card {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid #edf2f7;
+    margin-bottom: 2rem;
+}
+
+/* CARTÕES EDITAL */
+.edital-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.edital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border-color: #0d6efd;
+}
+
+/* LISTA DE DISCIPLINAS */
+.disciplina-list {
+    list-style: none;
+    padding: 0;
+}
+
+.disciplina-item {
+    background-color: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.disciplina-item:hover {
+    background-color: #f8f9fa;
+    border-color: #cbd5e1;
+}
+
+.disciplina-name {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+/* INPUTS, BOTÕES E STATUS */
+.form-control {
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.btn-primary { background-color: #0d6efd; border: none; }
+.btn-success { background-color: #00a143; border: none; }
+.btn-danger { background-color: #d60015; border: none; }
+
+.status-badge {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 30px;
+}
+
+.status-pendente { background-color: #ffe2e5; color: #d60015; }
